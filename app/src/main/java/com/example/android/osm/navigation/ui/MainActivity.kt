@@ -39,7 +39,6 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.cachemanager.CacheManager
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import kotlin.math.roundToLong
 
@@ -48,9 +47,6 @@ import kotlin.math.roundToLong
  * Main screen of the app. Displays a user name and gives the option to update the user name.
  */
 class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
-
-    private lateinit var mapView: MapView
-
     private var myLocationNewOverlay: MyLocationNewOverlay? = null
 
     private lateinit var locationLiveData: GpsProviderLiveData
@@ -119,7 +115,6 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
     private fun initMap() {
         setContentView(R.layout.activity_main)
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
-        mapView = findViewById(R.id.map)
         mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
         mapView.setMultiTouchControls(true)
         mapView.setBuiltInZoomControls(true)
