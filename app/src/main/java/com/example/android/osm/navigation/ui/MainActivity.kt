@@ -124,12 +124,12 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         val locationViewModel = ViewModelProviders.of(this, modelFactory).get(LocationViewModel::class.java)
         locationLiveData = locationViewModel.getGpsProvider()
         locationLiveData.observe(this, Observer<GpsProviderInfo> { it ->
-            if (myLocationNewOverlay == null) {
-                myLocationNewOverlay = MyLocationNewOverlay(it?.myLocationProvider, mapView)
-                mapView.overlayManager.add(myLocationNewOverlay)
-                myLocationNewOverlay?.enableMyLocation()
-            }
-            if (it != null && it.myLocationProvider?.lastKnownLocation != null) {
+            it?.let {
+                if (myLocationNewOverlay == null) {
+                    myLocationNewOverlay = MyLocationNewOverlay(it.myLocationProvider, mapView)
+                    mapView.overlayManager.add(myLocationNewOverlay)
+                    myLocationNewOverlay?.enableMyLocation()
+                }
                 val geoPoint = GeoPoint(it.myLocationProvider.lastKnownLocation)
                 mapView.controller.setCenter(geoPoint)
                 val speed = "%.1f".format(it.currentSpeed)

@@ -19,8 +19,8 @@ class GpsProviderLiveData(val gpsLocationProvider: GpsLocationProvider): LiveDat
         if (initialTime <= 0) {
             initialTime = currentTimeMillis
         }
-        val gpsProviderInfo = GpsProviderInfo(source)
-        if (location != null) {
+        location?.let {
+            val gpsProviderInfo = GpsProviderInfo(source)
             Log.d(LOG_TAG, "Incoming accuracy : " + location.accuracy)
             if (location.accuracy < WORST_ACCURACY) {
                 if (!::prevLocation.isInitialized) {
@@ -33,10 +33,10 @@ class GpsProviderLiveData(val gpsLocationProvider: GpsLocationProvider): LiveDat
                 gpsProviderInfo.totalTime = (currentTimeMillis - initialTime)
                 prevLocation = Location(location)
             }
-        }
 
-        if (isActive) {
-            value = gpsProviderInfo
+            if (isActive) {
+                value = gpsProviderInfo
+            }
         }
     }
 
