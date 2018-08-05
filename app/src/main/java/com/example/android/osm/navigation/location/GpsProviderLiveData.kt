@@ -7,7 +7,6 @@ import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer
 
 class GpsProviderLiveData(val gpsLocationProvider: GpsLocationProvider): LiveData<GpsProviderInfo>() {
     private lateinit var prevLocation: Location
-    private var isActive = false
     private var totalDistance = 0.0
     private var initialTime = 0L
 
@@ -16,11 +15,12 @@ class GpsProviderLiveData(val gpsLocationProvider: GpsLocationProvider): LiveDat
 
     private val locationListener = IMyLocationConsumer { location, source ->
         val currentTimeMillis = System.currentTimeMillis()
+        val gpsProviderInfo = GpsProviderInfo(source)
         if (initialTime <= 0) {
             initialTime = currentTimeMillis
+            value = gpsProviderInfo
         }
         location?.let {
-            val gpsProviderInfo = GpsProviderInfo(source)
             Log.d(LOG_TAG, "Incoming accuracy : " + location.accuracy)
             if (location.accuracy < WORST_ACCURACY) {
                 if (!::prevLocation.isInitialized) {
@@ -34,9 +34,7 @@ class GpsProviderLiveData(val gpsLocationProvider: GpsLocationProvider): LiveDat
                 prevLocation = Location(location)
             }
 
-            if (isActive) {
-                value = gpsProviderInfo
-            }
+            value = gpsProviderInfo
         }
     }
 
@@ -49,12 +47,7 @@ class GpsProviderLiveData(val gpsLocationProvider: GpsLocationProvider): LiveDat
     }
 
     override fun onActive() {
-        isActive = true
         locationListener.onLocationChanged(gpsLocationProvider.lastKnownLocation,
                 gpsLocationProvider)
-    }
-
-    override fun onInactive() {
-        isActive = false
     }
 }

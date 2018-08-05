@@ -47,7 +47,7 @@ import kotlin.math.roundToLong
  * Main screen of the app. Displays a user name and gives the option to update the user name.
  */
 class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
-    private var myLocationNewOverlay: MyLocationNewOverlay? = null
+    private lateinit var myLocationNewOverlay: MyLocationNewOverlay
 
     private lateinit var locationLiveData: GpsProviderLiveData
 
@@ -125,19 +125,20 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         locationLiveData = locationViewModel.getGpsProvider()
         locationLiveData.observe(this, Observer<GpsProviderInfo> { it ->
             it?.let {
-                if (myLocationNewOverlay == null) {
+                if (!this::myLocationNewOverlay.isInitialized) {
                     myLocationNewOverlay = MyLocationNewOverlay(it.myLocationProvider, mapView)
                     mapView.overlayManager.add(myLocationNewOverlay)
-                    myLocationNewOverlay?.enableMyLocation()
+                    myLocationNewOverlay.enableMyLocation()
+                } else {
+                    val geoPoint = GeoPoint(it.myLocationProvider.lastKnownLocation)
+                    mapView.controller.setCenter(geoPoint)
+                    val speed = "%.1f".format(it.currentSpeed)
+                    val distance = it.totalDistance.roundToLong()
+                    val time = it.totalTime / 1000
+                    total_time.text = "$time secs"
+                    current_speed.text = "$speed m/s"
+                    total_distance.text = "$distance m"
                 }
-                val geoPoint = GeoPoint(it.myLocationProvider.lastKnownLocation)
-                mapView.controller.setCenter(geoPoint)
-                val speed = "%.1f".format(it.currentSpeed)
-                val distance = it.totalDistance.roundToLong()
-                val time = it.totalTime / 1000
-                total_time.text = "$time secs"
-                current_speed.text = "$speed m/s"
-                total_distance.text = "$distance m"
             }
         })
     }
